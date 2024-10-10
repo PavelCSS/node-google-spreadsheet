@@ -611,3 +611,16 @@ export type DataValidationRule = {
   /** True if the UI should be customized based on the kind of condition. If true, "List" conditions will show a dropdown. */
   showCustomUi: boolean;
 };
+
+export type GridRangeA1 = {
+  rangeA1: string;
+
+  startColumnA1: string;
+  endColumnA1?: string;
+};
+
+export type NamedRange = {
+  namedRangeId: string;
+  name: string;
+  range: GridRange & GridRangeA1
+};

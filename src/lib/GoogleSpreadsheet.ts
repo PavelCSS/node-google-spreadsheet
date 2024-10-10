@@ -5,9 +5,16 @@ import Axios, {
 import { Stream } from 'stream';
 import * as _ from './lodash';
 import { GoogleSpreadsheetWorksheet } from './GoogleSpreadsheetWorksheet';
-import { axiosParamsSerializer, getFieldMask } from './utils';
+import { axiosParamsSerializer, getFieldMask, normalizeNamedRange } from './utils';
 import {
-  DataFilter, GridRange, NamedRangeId, SpreadsheetId, SpreadsheetProperties, WorksheetId, WorksheetProperties,
+  DataFilter,
+  GridRange,
+  NamedRange,
+  NamedRangeId,
+  SpreadsheetId,
+  SpreadsheetProperties,
+  WorksheetId,
+  WorksheetProperties,
 } from './types/sheets-types';
 import { PermissionRoles, PermissionsList, PublicPermissionRoles } from './types/drive-types';
 import { RecursivePartial } from './types/util-types';
@@ -81,6 +88,7 @@ export class GoogleSpreadsheet {
   private _rawProperties = null as SpreadsheetProperties | null;
   private _spreadsheetUrl = null as string | null;
   private _deleted = false;
+  namedRanges: Record<string, NamedRange>;
 
   /**
    * Sheets API [axios](https://axios-http.com) instance
@@ -115,6 +123,7 @@ export class GoogleSpreadsheet {
 
     this._rawSheets = {};
     this._spreadsheetUrl = null;
+    this.namedRanges = {};
 
     // create an axios instance with sheet root URL and interceptors to handle auth
     this.sheetsApi = Axios.create({
@@ -269,7 +278,24 @@ export class GoogleSpreadsheet {
     });
     this._spreadsheetUrl = response.data.spreadsheetUrl;
     this._rawProperties = response.data.properties;
+    this.namedRanges = _.keyBy(
+      response.data.namedRanges?.map(normalizeNamedRange),
+      'name'
+    );
     _.each(response.data.sheets, (s) => this._updateOrCreateSheet(s));
+
+    return response;
+  }
+
+  async updateInfo(includeCells = false) {
+    const response = await this.loadInfo(includeCells);
+    const nextSheetIds = response.data.sheets.map(({ properties }: any) => properties.sheetId);
+
+    Object.keys(this._rawSheets).forEach((sheetId) => {
+      if (!nextSheetIds.includes(+sheetId)) {
+        delete this._rawSheets[sheetId];
+      }
+    });
   }
 
   resetLocalCache() {

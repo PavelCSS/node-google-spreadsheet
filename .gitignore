@@ -2,6 +2,7 @@ node_modules/
 src/ignore/
 .env
 .DS_Store
+.idea
 examples/
 TODO
 dist

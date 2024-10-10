@@ -5,16 +5,21 @@ import { GoogleSpreadsheetRow } from './GoogleSpreadsheetRow';
 import { GoogleSpreadsheetCell } from './GoogleSpreadsheetCell';
 
 import {
-  getFieldMask, columnToLetter, letterToColumn, checkForDuplicateHeaders,
+  getFieldMask, columnToLetter, letterToColumn, checkForDuplicateHeaders, parseRangeA1,
 } from './utils';
 import { GoogleSpreadsheet } from './GoogleSpreadsheet';
 import {
   A1Range, SpreadsheetId, DimensionRangeIndexes, WorksheetDimension, WorksheetId, WorksheetProperties, A1Address,
   RowIndex, ColumnIndex, DataFilterWithoutWorksheetId, DataFilter, GetValuesRequestOptions, WorksheetGridProperties,
   WorksheetDimensionProperties, CellDataRange, AddRowOptions, GridRangeWithOptionalWorksheetId,
-  DataValidationRule,
+  DataValidationRule, GridRange, GridRangeWithoutWorksheetId,
 } from './types/sheets-types';
 
+const rangeFlip = (matrix: GoogleSpreadsheetCell[][]) => {
+  const row = matrix.find((v) => v)!;
+
+  return row.map((value, column) => matrix.map((r) => r[column]));
+};
 
 // types of cell data accepted when using row based api
 type RowCellData = string | number | boolean | Date;
@@ -226,6 +231,53 @@ export class GoogleSpreadsheetWorksheet {
       throw new Error('This cell has not been loaded yet');
     }
     return this._cells[rowIndex][columnIndex];
+  }
+
+  getCellsByA1Range(a1Range: A1Range, flip: boolean = false) {
+    const {
+      startRowIndex,
+      endRowIndex,
+      startColumnIndex,
+      endColumnIndex,
+    } = parseRangeA1(a1Range);
+
+    return this.getCells({
+      startRowIndex: startRowIndex - 1,
+      startColumnIndex: startColumnIndex - 1,
+      endRowIndex,
+      endColumnIndex,
+    }, flip);
+  }
+
+  getCells({
+    startRowIndex = 0,
+    startColumnIndex = 0,
+    endRowIndex,
+    endColumnIndex,
+  }: GridRangeWithoutWorksheetId, flip: boolean = false) {
+    let values = this._cells
+      .slice(startRowIndex - 1, endRowIndex)
+      .map((columns) => columns.slice(startColumnIndex - 1, endColumnIndex));
+
+    if (flip) {
+      values = rangeFlip(values);
+    }
+
+    if (!Number.isInteger(flip ? endColumnIndex : endRowIndex)) {
+      values = values.filter((cells) => !!cells.find((cell) => !!cell.formattedValue));
+    }
+
+    if (!Number.isInteger(flip ? endRowIndex : endColumnIndex)) {
+      const length = values.reduce((maxLength, row) => {
+        const index = row.reverse().findIndex((cell) => !!cell.formattedValue);
+        const nextMaxLength = row.length - index;
+
+        return maxLength > nextMaxLength ? maxLength : nextMaxLength;
+      }, 0);
+      values = values.map((cells) => cells.slice(0, length));
+    }
+
+    return values;
   }
 
   async loadCells(sheetFilters?: DataFilterWithoutWorksheetId | DataFilterWithoutWorksheetId[]) {
@@ -522,6 +574,35 @@ export class GoogleSpreadsheetWorksheet {
       rows.push(row);
     }
     return rows;
+  }
+
+  async deleteRows(rows: GoogleSpreadsheetRow[]) {
+    let rowsNext = Array.isArray(rows) ? rows : [rows];
+
+    if (!rowsNext.length) {
+      return;
+    }
+
+    rowsNext = rowsNext.filter((row) => {
+      if (row.deleted) throw new Error('This row has been deleted - call getRows again before making updates.');
+
+      return !row.deleted;
+    });
+
+    const requests = rowsNext.map((row) => ({
+      deleteRange: {
+        range: {
+          sheetId: this.sheetId,
+          startRowIndex: row.rowNumber - 1,
+          endRowIndex: row.rowNumber,
+        },
+        shiftDimension: 'ROWS',
+      },
+    }));
+
+    await this._spreadsheet._makeBatchUpdateRequest(requests);
+
+    rowsNext.forEach((row) => this._shiftRowCache(row.rowNumber));
   }
 
   /**
