@@ -5,7 +5,7 @@ src/ignore/
 .idea
 examples/
 TODO
-dist
+#dist
 
 # dmno files ###
 # local cache for resolved values
