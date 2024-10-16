@@ -5,7 +5,7 @@ import Axios, {
 import { Stream } from 'stream';
 import * as _ from './lodash';
 import { GoogleSpreadsheetWorksheet } from './GoogleSpreadsheetWorksheet';
-import { axiosParamsSerializer, getFieldMask, normalizeNamedRange } from './utils';
+import {axiosParamsSerializer, getFieldMask, toA1Range} from './utils';
 import {
   DataFilter,
   GridRange,
@@ -88,7 +88,7 @@ export class GoogleSpreadsheet {
   private _rawProperties = null as SpreadsheetProperties | null;
   private _spreadsheetUrl = null as string | null;
   private _deleted = false;
-  namedRanges: Record<string, NamedRange>;
+  namedRanges: Record<string, NamedRange & { rangeA1: string }>;
 
   /**
    * Sheets API [axios](https://axios-http.com) instance
@@ -279,7 +279,15 @@ export class GoogleSpreadsheet {
     this._spreadsheetUrl = response.data.spreadsheetUrl;
     this._rawProperties = response.data.properties;
     this.namedRanges = _.keyBy(
-      response.data.namedRanges?.map(normalizeNamedRange),
+      response.data.namedRanges?.map((v: NamedRange) => {
+        Object.defineProperty(v.range, 'rangeA1', {
+          get() {
+            return toA1Range(this);
+          },
+        });
+
+        return v;
+      }),
       'name'
     );
     _.each(response.data.sheets, (s) => this._updateOrCreateSheet(s));

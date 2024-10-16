@@ -502,13 +502,10 @@ declare const parseRangeA1: (a1Address: A1Range) => {
     endRowIndex: number | undefined;
     startColumnA1: string;
     endColumnA1: string;
+    startRowA1: string;
+    endRowA1: string;
 };
 declare const toA1Range: ({ startColumnIndex, endColumnIndex, startRowIndex, endRowIndex, }: GridRangeWithoutWorksheetId) => string;
-declare const normalizeNamedRange: (v: NamedRange) => {
-    range: GridRange;
-    namedRangeId: string;
-    name: string;
-};
 
 declare class GoogleSpreadsheetRow<T extends Record<string, any> = Record<string, any>> {
     /** parent GoogleSpreadsheetWorksheet instance */
@@ -945,7 +942,9 @@ declare class GoogleSpreadsheet {
     private _rawProperties;
     private _spreadsheetUrl;
     private _deleted;
-    namedRanges: Record<string, NamedRange>;
+    namedRanges: Record<string, NamedRange & {
+        rangeA1: string;
+    }>;
     /**
      * Sheets API [axios](https://axios-http.com) instance
      * authentication is automatically attached
@@ -1097,4 +1096,4 @@ declare class GoogleSpreadsheet {
     static createNewSpreadsheetDocument(auth: GoogleApiAuth, properties?: Partial<SpreadsheetProperties>): Promise<GoogleSpreadsheet>;
 }
 
-export { A1Address, A1Range, AddRowOptions, BooleanCondition, CellBorder, CellBorderLineStyle, CellBorders, CellData, CellDataRange, CellFormat, CellPadding, CellValueErrorType, CellValueType, Color, ColorStyle, ColumnAddress, ColumnIndex, ConditionType, ConditionValue, DataFilter, DataFilterWithoutWorksheetId, DataSourceId, DataSourceSheetProperties, DataValidationRule, DeveloperMetadata, DeveloperMetadataLocation, DeveloperMetadataLocationType, DeveloperMetadataVisibility, DimensionRange, DimensionRangeIndexes, DimensionRangeWithoutWorksheetId, ErrorValue, ExtendedValue, GetValuesRequestOptions, GoogleSpreadsheet, GoogleSpreadsheetCell, GoogleSpreadsheetCellErrorValue, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet, GridRange, GridRangeA1, GridRangeWithOptionalWorksheetId, GridRangeWithoutWorksheetId, HorizontalAlign, HyperlinkDisplayType, Integer, IterativeCalculationSetting, LocaleCode, NamedRange, NamedRangeId, NumberFormat, NumberFormatType, PaginationOptions, RecalculationInterval, RelativeDate, RowIndex, RowOrColumnIndex, SpreadsheetId, SpreadsheetProperties, SpreadsheetTheme, TextDirection, TextFormat, TextRotation, ThemeColorPair, ThemeColorType, Timezone, VerticalAlign, WorksheetDimension, WorksheetDimensionProperties, WorksheetGridProperties, WorksheetId, WorksheetIndex, WorksheetProperties, WorksheetPropertiesPartial, WorksheetType, WrapStrategy, axiosParamsSerializer, checkForDuplicateHeaders, columnToLetter, getFieldMask, letterToColumn, normalizeNamedRange, parseRangeA1, toA1Range };
+export { A1Address, A1Range, AddRowOptions, BooleanCondition, CellBorder, CellBorderLineStyle, CellBorders, CellData, CellDataRange, CellFormat, CellPadding, CellValueErrorType, CellValueType, Color, ColorStyle, ColumnAddress, ColumnIndex, ConditionType, ConditionValue, DataFilter, DataFilterWithoutWorksheetId, DataSourceId, DataSourceSheetProperties, DataValidationRule, DeveloperMetadata, DeveloperMetadataLocation, DeveloperMetadataLocationType, DeveloperMetadataVisibility, DimensionRange, DimensionRangeIndexes, DimensionRangeWithoutWorksheetId, ErrorValue, ExtendedValue, GetValuesRequestOptions, GoogleSpreadsheet, GoogleSpreadsheetCell, GoogleSpreadsheetCellErrorValue, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet, GridRange, GridRangeA1, GridRangeWithOptionalWorksheetId, GridRangeWithoutWorksheetId, HorizontalAlign, HyperlinkDisplayType, Integer, IterativeCalculationSetting, LocaleCode, NamedRange, NamedRangeId, NumberFormat, NumberFormatType, PaginationOptions, RecalculationInterval, RelativeDate, RowIndex, RowOrColumnIndex, SpreadsheetId, SpreadsheetProperties, SpreadsheetTheme, TextDirection, TextFormat, TextRotation, ThemeColorPair, ThemeColorType, Timezone, VerticalAlign, WorksheetDimension, WorksheetDimensionProperties, WorksheetGridProperties, WorksheetId, WorksheetIndex, WorksheetProperties, WorksheetPropertiesPartial, WorksheetType, WrapStrategy, axiosParamsSerializer, checkForDuplicateHeaders, columnToLetter, getFieldMask, letterToColumn, parseRangeA1, toA1Range };

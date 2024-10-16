@@ -68,12 +68,12 @@ export function checkForDuplicateHeaders(headers: string[]) {
 export const parseRangeA1 = (a1Address: A1Range) => {
   const split = a1Address.match(/([A-Z]+)?(\d+)?:?([A-Z]+)?(\d+)?$/) || [];
   if (!split) throw new Error(`Range address "${a1Address}" not valid`);
-  const [rangeA1 = '', startColumnA1, rowStart, endColumnA1, rowEnd] = split;
+  const [rangeA1 = '', startColumnA1, startRowA1, endColumnA1, endRowA1] = split;
 
-  const startColumnIndex = startColumnA1 ? letterToColumn(startColumnA1) : 1;
+  const startColumnIndex = startColumnA1 ? letterToColumn(startColumnA1) - 1 : 0;
   const endColumnIndex = endColumnA1 ? letterToColumn(endColumnA1) : undefined;
-  const startRowIndex = rowStart ? parseInt(rowStart) : 1;
-  const endRowIndex = rowEnd ? parseInt(rowEnd) : undefined;
+  const startRowIndex = startRowA1 ? parseInt(startRowA1) - 1 : 0;
+  const endRowIndex = endRowA1 ? parseInt(endRowA1) : undefined;
 
   return {
     rangeA1,
@@ -83,6 +83,8 @@ export const parseRangeA1 = (a1Address: A1Range) => {
     endRowIndex,
     startColumnA1,
     endColumnA1,
+    startRowA1,
+    endRowA1,
   };
 };
 
@@ -95,18 +97,17 @@ export const toA1Range = ({
   let startA1Range = '';
   let endA1Range = '';
 
-  if (Number.isInteger(startColumnIndex) && startColumnIndex! > 0) {
-    startA1Range += columnToLetter(startColumnIndex!);
-
-    if (Number.isInteger(startRowIndex) && startRowIndex! > 0) {
-      startA1Range += `${startRowIndex}`;
-    }
+  if (Number.isInteger(startColumnIndex)) {
+    startA1Range += columnToLetter(startColumnIndex! + 1);
+  }
+  if (Number.isInteger(startRowIndex)) {
+    startA1Range += `${startRowIndex! + 1}`;
   }
 
-  if (Number.isInteger(endColumnIndex) && endColumnIndex! > 0) {
+  if (Number.isInteger(endColumnIndex)) {
     endA1Range += columnToLetter(endColumnIndex!);
   }
-  if (Number.isInteger(endRowIndex) && endRowIndex! > 0) {
+  if (Number.isInteger(endRowIndex)) {
     endA1Range += `${endRowIndex!}`;
   }
 
@@ -115,36 +116,4 @@ export const toA1Range = ({
   }
 
   return [startA1Range, endA1Range].join(':');
-};
-
-export const normalizeNamedRange = (v: NamedRange) => {
-  const startRowIndex = v.range.startRowIndex;
-  const startColumnIndex = v.range.startColumnIndex;
-
-  const range: GridRange = {
-    ...v.range,
-    startRowIndex: startRowIndex ?? 0,
-    startColumnIndex: startColumnIndex ?? 0,
-  };
-
-  Object.defineProperty(range, 'rangeA1', {
-    get() {
-      return toA1Range(this);
-    },
-  });
-  Object.defineProperty(range, 'startColumnA1', {
-    get() {
-      return columnToLetter(this.startColumnIndex);
-    },
-  });
-  Object.defineProperty(range, 'endColumnA1', {
-    get() {
-      return columnToLetter(this.endColumnIndex) || undefined;
-    },
-  });
-
-  return {
-    ...v,
-    range,
-  };
 };

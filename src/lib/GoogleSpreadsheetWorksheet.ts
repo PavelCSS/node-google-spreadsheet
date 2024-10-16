@@ -236,14 +236,13 @@ export class GoogleSpreadsheetWorksheet {
   getCellsByA1Range(a1Range: A1Range, flip: boolean = false) {
     const {
       startRowIndex,
-      endRowIndex,
       startColumnIndex,
+      endRowIndex,
       endColumnIndex,
     } = parseRangeA1(a1Range);
-
     return this.getCells({
-      startRowIndex: startRowIndex - 1,
-      startColumnIndex: startColumnIndex - 1,
+      startRowIndex,
+      startColumnIndex,
       endRowIndex,
       endColumnIndex,
     }, flip);
@@ -256,8 +255,8 @@ export class GoogleSpreadsheetWorksheet {
     endColumnIndex,
   }: GridRangeWithoutWorksheetId, flip: boolean = false) {
     let values = this._cells
-      .slice(startRowIndex - 1, endRowIndex)
-      .map((columns) => columns.slice(startColumnIndex - 1, endColumnIndex));
+      .slice(startRowIndex, endRowIndex)
+      .map((columns) => columns.slice(startColumnIndex, endColumnIndex));
 
     if (flip) {
       values = rangeFlip(values);
