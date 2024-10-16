@@ -123,8 +123,8 @@ export const normalizeNamedRange = (v: NamedRange) => {
 
   const range: GridRange = {
     ...v.range,
-    startRowIndex: Number.isInteger(startRowIndex) ? startRowIndex! + 1 : startRowIndex,
-    startColumnIndex: Number.isInteger(startColumnIndex) ? startColumnIndex! + 1 : startColumnIndex,
+    startRowIndex: startRowIndex ?? 0,
+    startColumnIndex: startColumnIndex ?? 0,
   };
 
   Object.defineProperty(range, 'rangeA1', {
