@@ -707,9 +707,11 @@ export class GoogleSpreadsheetWorksheet {
     // https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/request#UpdateNamedRangeRequest
   }
 
-  async addNamedRange() {
-    // Request type = `addNamedRange`
-    // https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/request#AddNamedRangeRequest
+  async addNamedRange(name: string, range: GridRange) {
+    return this._spreadsheet.addNamedRange(name, {
+      ...range,
+      sheetId: this.sheetId,
+    });
   }
 
   async deleteNamedRange() {

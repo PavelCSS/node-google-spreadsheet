@@ -778,7 +778,7 @@ declare class GoogleSpreadsheetWorksheet {
     getCellsInRange(a1Range: A1Range, options?: GetValuesRequestOptions): Promise<any>;
     batchGetCellsInRange(a1Ranges: A1Range[], options?: GetValuesRequestOptions): Promise<any>;
     updateNamedRange(): Promise<void>;
-    addNamedRange(): Promise<void>;
+    addNamedRange(name: string, range: GridRange): Promise<any>;
     deleteNamedRange(): Promise<void>;
     repeatCell(): Promise<void>;
     autoFill(): Promise<void>;
@@ -1002,6 +1002,7 @@ declare class GoogleSpreadsheet {
      * */
     updateProperties(properties: Partial<SpreadsheetProperties>): Promise<void>;
     loadInfo(includeCells?: boolean): Promise<AxiosResponse<any, any>>;
+    _updateNamedRanges(namedRanges?: NamedRange[]): void;
     updateInfo(includeCells?: boolean): Promise<void>;
     resetLocalCache(): void;
     get sheetCount(): number;
@@ -1029,9 +1030,7 @@ declare class GoogleSpreadsheet {
     /** name of new named range */
     name: string, 
     /** GridRange object describing range */
-    range: GridRange, 
-    /** id for named range (optional) */
-    namedRangeId?: string): Promise<any>;
+    range: GridRange): Promise<any>;
     /**
      * delete a named range
      * @see https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/request#DeleteNamedRangeRequest

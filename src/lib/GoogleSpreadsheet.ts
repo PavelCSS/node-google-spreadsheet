@@ -199,6 +199,7 @@ export class GoogleSpreadsheet {
       // responseIncludeGridData: true
     });
 
+    this._updateNamedRanges(response.data.updatedSpreadsheet.namedRanges);
     this._updateRawProperties(response.data.updatedSpreadsheet.properties);
     _.each(response.data.updatedSpreadsheet.sheets, (s) => this._updateOrCreateSheet(s));
     // console.log('API RESPONSE', response.data.replies[0][requestType]);
@@ -219,6 +220,7 @@ export class GoogleSpreadsheet {
       },
     });
 
+    this._updateNamedRanges(response.data.updatedSpreadsheet.namedRanges);
     this._updateRawProperties(response.data.updatedSpreadsheet.properties);
     _.each(response.data.updatedSpreadsheet.sheets, (s) => this._updateOrCreateSheet(s));
   }
@@ -278,8 +280,15 @@ export class GoogleSpreadsheet {
     });
     this._spreadsheetUrl = response.data.spreadsheetUrl;
     this._rawProperties = response.data.properties;
+    this._updateNamedRanges(response.data.namedRanges);
+    _.each(response.data.sheets, (s) => this._updateOrCreateSheet(s));
+
+    return response;
+  }
+
+  _updateNamedRanges(namedRanges?: NamedRange[]) {
     this.namedRanges = _.keyBy(
-      response.data.namedRanges?.map((v: NamedRange) => {
+      namedRanges?.map((v: NamedRange) => {
         Object.defineProperty(v.range, 'rangeA1', {
           get() {
             return toA1Range(this);
@@ -289,10 +298,7 @@ export class GoogleSpreadsheet {
         return v;
       }),
       'name'
-    );
-    _.each(response.data.sheets, (s) => this._updateOrCreateSheet(s));
-
-    return response;
+    ) as Record<string, NamedRange & { rangeA1: string }>;
   }
 
   async updateInfo(includeCells = false) {
@@ -378,15 +384,14 @@ export class GoogleSpreadsheet {
     /** name of new named range */
     name: string,
     /** GridRange object describing range */
-    range: GridRange,
-    /** id for named range (optional) */
-    namedRangeId?: string
+    range: GridRange
   ) {
     // TODO: add named range to local cache
     return this._makeSingleUpdateRequest('addNamedRange', {
-      name,
-      namedRangeId,
-      range,
+      namedRange: {
+        name,
+        range,
+      },
     });
   }
 
@@ -664,6 +669,7 @@ export class GoogleSpreadsheet {
     // TODO ideally these things aren't public, might want to refactor anyway
     newSpreadsheet._spreadsheetUrl = response.data.spreadsheetUrl;
     newSpreadsheet._rawProperties = response.data.properties;
+    newSpreadsheet._updateNamedRanges(response.data.namedRanges);
     _.each(response.data.sheets, (s) => newSpreadsheet._updateOrCreateSheet(s));
 
     return newSpreadsheet;
