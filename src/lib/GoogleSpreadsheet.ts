@@ -5,7 +5,7 @@ import Axios, {
 import { Stream } from 'stream';
 import * as _ from './lodash';
 import { GoogleSpreadsheetWorksheet } from './GoogleSpreadsheetWorksheet';
-import {axiosParamsSerializer, getFieldMask, toA1Range} from './utils';
+import { axiosParamsSerializer, getFieldMask, toA1Range } from './utils';
 import {
   DataFilter,
   GridRange,
@@ -287,7 +287,7 @@ export class GoogleSpreadsheet {
   }
 
   _updateNamedRanges(namedRanges?: NamedRange[]) {
-    this.namedRanges = _.keyBy(
+    const next = _.keyBy(
       namedRanges?.map((v: NamedRange) => {
         Object.defineProperty(v.range, 'rangeA1', {
           get() {
@@ -299,6 +299,8 @@ export class GoogleSpreadsheet {
       }),
       'name'
     ) as Record<string, NamedRange & { rangeA1: string }>;
+
+    this.namedRanges = _.merge(this.namedRanges, next);
   }
 
   async updateInfo(includeCells = false) {

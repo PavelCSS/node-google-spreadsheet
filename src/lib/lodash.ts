@@ -32,3 +32,4 @@ export { default as sortBy } from 'lodash/sortBy.js';
 export { default as times } from 'lodash/times.js';
 export { default as unset } from 'lodash/unset.js';
 export { default as values } from 'lodash/values.js';
+export { default as merge } from 'lodash/merge.js';
