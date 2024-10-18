@@ -612,15 +612,8 @@ export type DataValidationRule = {
   showCustomUi: boolean;
 };
 
-export type GridRangeA1 = {
-  rangeA1: string;
-
-  startColumnA1: string;
-  endColumnA1?: string;
-};
-
 export type NamedRange = {
   namedRangeId: string;
   name: string;
-  range: GridRange & GridRangeA1
+  range: GridRange
 };

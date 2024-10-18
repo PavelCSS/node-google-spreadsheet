@@ -478,15 +478,10 @@ type DataValidationRule = {
     /** True if the UI should be customized based on the kind of condition. If true, "List" conditions will show a dropdown. */
     showCustomUi: boolean;
 };
-type GridRangeA1 = {
-    rangeA1: string;
-    startColumnA1: string;
-    endColumnA1?: string;
-};
 type NamedRange = {
     namedRangeId: string;
     name: string;
-    range: GridRange & GridRangeA1;
+    range: GridRange;
 };
 
 declare function getFieldMask(obj: Record<string, unknown>): string;
@@ -942,9 +937,7 @@ declare class GoogleSpreadsheet {
     private _rawProperties;
     private _spreadsheetUrl;
     private _deleted;
-    namedRanges: Record<string, NamedRange & {
-        rangeA1: string;
-    }>;
+    namedRanges: Record<string, NamedRange>;
     /**
      * Sheets API [axios](https://axios-http.com) instance
      * authentication is automatically attached
@@ -1095,4 +1088,4 @@ declare class GoogleSpreadsheet {
     static createNewSpreadsheetDocument(auth: GoogleApiAuth, properties?: Partial<SpreadsheetProperties>): Promise<GoogleSpreadsheet>;
 }
 
-export { A1Address, A1Range, AddRowOptions, BooleanCondition, CellBorder, CellBorderLineStyle, CellBorders, CellData, CellDataRange, CellFormat, CellPadding, CellValueErrorType, CellValueType, Color, ColorStyle, ColumnAddress, ColumnIndex, ConditionType, ConditionValue, DataFilter, DataFilterWithoutWorksheetId, DataSourceId, DataSourceSheetProperties, DataValidationRule, DeveloperMetadata, DeveloperMetadataLocation, DeveloperMetadataLocationType, DeveloperMetadataVisibility, DimensionRange, DimensionRangeIndexes, DimensionRangeWithoutWorksheetId, ErrorValue, ExtendedValue, GetValuesRequestOptions, GoogleSpreadsheet, GoogleSpreadsheetCell, GoogleSpreadsheetCellErrorValue, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet, GridRange, GridRangeA1, GridRangeWithOptionalWorksheetId, GridRangeWithoutWorksheetId, HorizontalAlign, HyperlinkDisplayType, Integer, IterativeCalculationSetting, LocaleCode, NamedRange, NamedRangeId, NumberFormat, NumberFormatType, PaginationOptions, RecalculationInterval, RelativeDate, RowIndex, RowOrColumnIndex, SpreadsheetId, SpreadsheetProperties, SpreadsheetTheme, TextDirection, TextFormat, TextRotation, ThemeColorPair, ThemeColorType, Timezone, VerticalAlign, WorksheetDimension, WorksheetDimensionProperties, WorksheetGridProperties, WorksheetId, WorksheetIndex, WorksheetProperties, WorksheetPropertiesPartial, WorksheetType, WrapStrategy, axiosParamsSerializer, checkForDuplicateHeaders, columnToLetter, getFieldMask, letterToColumn, parseRangeA1, toA1Range };
+export { A1Address, A1Range, AddRowOptions, BooleanCondition, CellBorder, CellBorderLineStyle, CellBorders, CellData, CellDataRange, CellFormat, CellPadding, CellValueErrorType, CellValueType, Color, ColorStyle, ColumnAddress, ColumnIndex, ConditionType, ConditionValue, DataFilter, DataFilterWithoutWorksheetId, DataSourceId, DataSourceSheetProperties, DataValidationRule, DeveloperMetadata, DeveloperMetadataLocation, DeveloperMetadataLocationType, DeveloperMetadataVisibility, DimensionRange, DimensionRangeIndexes, DimensionRangeWithoutWorksheetId, ErrorValue, ExtendedValue, GetValuesRequestOptions, GoogleSpreadsheet, GoogleSpreadsheetCell, GoogleSpreadsheetCellErrorValue, GoogleSpreadsheetRow, GoogleSpreadsheetWorksheet, GridRange, GridRangeWithOptionalWorksheetId, GridRangeWithoutWorksheetId, HorizontalAlign, HyperlinkDisplayType, Integer, IterativeCalculationSetting, LocaleCode, NamedRange, NamedRangeId, NumberFormat, NumberFormatType, PaginationOptions, RecalculationInterval, RelativeDate, RowIndex, RowOrColumnIndex, SpreadsheetId, SpreadsheetProperties, SpreadsheetTheme, TextDirection, TextFormat, TextRotation, ThemeColorPair, ThemeColorType, Timezone, VerticalAlign, WorksheetDimension, WorksheetDimensionProperties, WorksheetGridProperties, WorksheetId, WorksheetIndex, WorksheetProperties, WorksheetPropertiesPartial, WorksheetType, WrapStrategy, axiosParamsSerializer, checkForDuplicateHeaders, columnToLetter, getFieldMask, letterToColumn, parseRangeA1, toA1Range };

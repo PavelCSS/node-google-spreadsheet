@@ -88,7 +88,7 @@ export class GoogleSpreadsheet {
   private _rawProperties = null as SpreadsheetProperties | null;
   private _spreadsheetUrl = null as string | null;
   private _deleted = false;
-  namedRanges: Record<string, NamedRange & { rangeA1: string }>;
+  namedRanges: Record<string, NamedRange>;
 
   /**
    * Sheets API [axios](https://axios-http.com) instance
@@ -287,19 +287,7 @@ export class GoogleSpreadsheet {
   }
 
   _updateNamedRanges(namedRanges?: NamedRange[]) {
-    const next = _.keyBy(
-      namedRanges?.map((v: NamedRange) => {
-        Object.defineProperty(v.range, 'rangeA1', {
-          get() {
-            return toA1Range(this);
-          },
-        });
-
-        return v;
-      }),
-      'name'
-    ) as Record<string, NamedRange & { rangeA1: string }>;
-
+    const next = _.keyBy(namedRanges, 'name') as Record<string, NamedRange>;
     this.namedRanges = _.merge(this.namedRanges, next);
   }
 
