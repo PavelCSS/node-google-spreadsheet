@@ -5,7 +5,7 @@ import { GoogleSpreadsheetRow } from './GoogleSpreadsheetRow';
 import { GoogleSpreadsheetCell } from './GoogleSpreadsheetCell';
 
 import {
-  getFieldMask, columnToLetter, letterToColumn, checkForDuplicateHeaders, parseRangeA1,
+  getFieldMask, columnToLetter, letterToColumn, checkForDuplicateHeaders, parseRangeA1, toA1Range,
 } from './utils';
 import { GoogleSpreadsheet } from './GoogleSpreadsheet';
 import {
@@ -602,6 +602,24 @@ export class GoogleSpreadsheetWorksheet {
     await this._spreadsheet._makeBatchUpdateRequest(requests);
 
     rowsNext.forEach((row) => this._shiftRowCache(row.rowNumber));
+  }
+
+  async setValues(range: DataFilter, values: string[][], majorDimension: WorksheetDimension = 'ROWS') {
+    const a1Range = `${this.encodedA1SheetName}!${_.isString(range) ? range : toA1Range(range)}`;
+
+    await this._spreadsheet.sheetsApi.request({
+      method: 'put',
+      url: `/values/${a1Range}`,
+      params: {
+        valueInputOption: 'RAW',
+        includeValuesInResponse: true,
+      },
+      data: {
+        range: a1Range,
+        values,
+        majorDimension,
+      },
+    });
   }
 
   /**

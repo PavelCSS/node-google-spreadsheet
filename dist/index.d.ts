@@ -747,6 +747,7 @@ declare class GoogleSpreadsheetWorksheet {
         limit?: number;
     }): Promise<GoogleSpreadsheetRow<T>[]>;
     deleteRows(rows: GoogleSpreadsheetRow[]): Promise<void>;
+    setValues(range: DataFilter, values: string[][], majorDimension?: WorksheetDimension): Promise<void>;
     /**
      * @internal
      * Used internally to update row numbers after deleting rows.
