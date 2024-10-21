@@ -268,7 +268,7 @@ export class GoogleSpreadsheetWorksheet {
 
     if (!Number.isInteger(flip ? endRowIndex : endColumnIndex)) {
       const length = values.reduce((maxLength, row) => {
-        const index = row.reverse().findIndex((cell) => !!cell.formattedValue);
+        const index = row.findIndex((cell) => !!cell.formattedValue);
         const nextMaxLength = row.length - index;
 
         return maxLength > nextMaxLength ? maxLength : nextMaxLength;
