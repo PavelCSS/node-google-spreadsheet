@@ -604,7 +604,7 @@ export class GoogleSpreadsheetWorksheet {
     rowsNext.forEach((row) => this._shiftRowCache(row.rowNumber));
   }
 
-  async setValues(range: DataFilter, values: string[][], majorDimension: WorksheetDimension = 'ROWS') {
+  async setValues(range: DataFilter, values: GoogleSpreadsheetCell['value'][][], majorDimension: WorksheetDimension = 'ROWS') {
     const a1Range = `${this.encodedA1SheetName}!${_.isString(range) ? range : toA1Range(range)}`;
 
     await this._spreadsheet.sheetsApi.request({
