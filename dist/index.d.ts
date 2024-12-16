@@ -528,7 +528,7 @@ declare class GoogleSpreadsheetRow<T extends Record<string, any> = Record<string
     _updateRowNumber(newRowNumber: number): void;
     get a1Range(): string;
     /** get row's value of specific cell (by header key) */
-    get(key: keyof T): any;
+    get<K extends keyof T, V extends T[K]>(key: K): V;
     /** set row's value of specific cell (by header key) */
     set<K extends keyof T>(key: K, val: T[K]): void;
     /** set multiple values in the row at once from an object */

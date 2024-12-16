@@ -40,7 +40,7 @@ export class GoogleSpreadsheetRow<T extends Record<string, any> = Record<string,
   }
 
   /** get row's value of specific cell (by header key) */
-  get(key: keyof T) {
+  get<K extends keyof T, V extends T[K]>(key: K): V {
     const index = this._worksheet.headerValues.indexOf(key as string);
     return this._rawData[index];
   }
